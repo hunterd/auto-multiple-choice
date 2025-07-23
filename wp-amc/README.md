@@ -80,3 +80,15 @@ The plugin exposes several action hooks allowing extensions to run custom code a
 - `wp_amc_preferences` fires when the **Preferences** page is loaded.
 
 Developers can hook into these actions to modify the behaviour of the plugin or inject additional content.
+
+## Tests
+
+Des tests unitaires basés sur **PHPUnit** se trouvent dans le répertoire `tests`.
+Après installation des dépendances avec Composer, exécutez :
+
+```bash
+composer install
+vendor/bin/phpunit
+```
+
+Le fichier `phpunit.xml` fournit la configuration minimale pour lancer ces tests.
