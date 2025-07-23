@@ -67,3 +67,16 @@ L'interface se veut moderne et responsive&nbsp;:
 
 Cette version initiale contient la structure de base du plugin et des vues d'administration factices. Les futures versions implémenteront progressivement l'ensemble des fonctionnalités d'Auto Multiple Choice, en s'appuyant sur les technologies mentionnées ci-dessus.
 
+
+## Hooks
+
+The plugin exposes several action hooks allowing extensions to run custom code at key points:
+
+- `wp_amc_prepare_exam` fires when the **Prepare Exam** page is loaded.
+- `wp_amc_scan_sheets` fires when the **Scan Sheets** page is loaded.
+- `wp_amc_mailing` fires when the **Mailing** page is loaded (if the module is enabled).
+- `wp_amc_manual_grading` fires when the **Manual Grading** page is loaded.
+- `wp_amc_export_results` fires when the **Export Results** page is loaded.
+- `wp_amc_preferences` fires when the **Preferences** page is loaded.
+
+Developers can hook into these actions to modify the behaviour of the plugin or inject additional content.
