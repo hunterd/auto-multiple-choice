@@ -30,7 +30,7 @@ wp-amc/
 - Les routes (simulées via les hooks WordPress) sont définies dans `routes.php`.
 - Les contrôleurs regroupent la logique de chaque vue (préparation, scan, notation, export...).
 - Les vues se trouvent dans `app/Views` et peuvent être thémées facilement.
-- Le chargement automatique des classes utilise Composer avec l'espace de noms `App\`.
+- Le chargement automatique des classes utilise Composer avec l'espace de noms `WpAmc\`.
 
 ## Installation
 
