@@ -4,13 +4,18 @@ Plugin Name: Auto Multiple Choice
 Description: Integrates Auto Multiple Choice tools into WordPress.
 */
 
+use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Schema\Blueprint;
+
 if (!defined('ABSPATH')) {
     exit;
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+define('WP_AMC_PLUGIN_FILE', __FILE__);
+
+
 
 function wpamc_init_eloquent()
 {
@@ -40,8 +45,6 @@ function wpamc_init_eloquent()
 }
 
 add_action('plugins_loaded', 'wpamc_init_eloquent');
-
-use Illuminate\Database\Schema\Blueprint;
 
 function wpamc_activate()
 {
@@ -96,3 +99,4 @@ register_activation_hook(__FILE__, 'wpamc_activate');
 
 // Initialize admin menu
 add_action('admin_menu', ['\WpAmc\Controllers\Admin\MenuController', 'register']);
+add_action('admin_enqueue_scripts', ['\WpAmc\Controllers\Admin\MenuController', 'enqueue_assets']);
