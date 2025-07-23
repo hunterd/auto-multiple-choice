@@ -5,6 +5,8 @@ class MenuController
 {
     public static function register()
     {
+        add_action('admin_enqueue_scripts', [self::class, 'enqueue_assets']);
+
         add_menu_page(
             __('Auto Multiple Choice', 'wp-amc'),
             __('Auto Multiple Choice', 'wp-amc'),
@@ -91,8 +93,39 @@ class MenuController
         self::render('mailing');
     }
 
+    public static function enqueue_assets($hook)
+    {
+        if (strpos($hook, 'wp-amc') === false) {
+            return;
+        }
+
+        $plugin_file = \defined('WP_AMC_PLUGIN_FILE') ? WP_AMC_PLUGIN_FILE : __DIR__ . '/../../../wp-amc.php';
+
+        wp_enqueue_style(
+            'wp-amc-admin',
+            plugins_url('public/css/admin.css', $plugin_file),
+            [],
+            '1.0'
+        );
+        wp_enqueue_script(
+            'wp-amc-admin',
+            plugins_url('public/js/admin.js', $plugin_file),
+            ['jquery'],
+            '1.0',
+            true
+        );
+    }
+
     protected static function render($view)
     {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $model = '\\WpAmc\\Models\\' . ucfirst($view) . 'Model';
+            $nonce_name = 'wpamc_' . $view . '_nonce';
+            if (class_exists($model) && isset($_POST[$nonce_name]) && wp_verify_nonce($_POST[$nonce_name], $nonce_name)) {
+                $model::save($_POST);
+            }
+        }
+
         $view_file = __DIR__ . '/../../Views/admin/' . $view . '.php';
         if (file_exists($view_file)) {
             include $view_file;
