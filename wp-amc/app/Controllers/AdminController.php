@@ -1,5 +1,5 @@
 <?php
-namespace WP_AMC\Controllers;
+namespace WpAmc\Controllers;
 
 class AdminController {
     public static function index() {

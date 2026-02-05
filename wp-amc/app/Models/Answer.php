@@ -1,0 +1,16 @@
+<?php
+namespace WpAmc\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Answer extends Model
+{
+    protected $table = 'answers';
+    protected $guarded = [];
+    public $timestamps = false;
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
+}
