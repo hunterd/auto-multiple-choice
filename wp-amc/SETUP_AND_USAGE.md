@@ -4,7 +4,7 @@ This plugin integrates Auto Multiple Choice (AMC) features into WordPress, allow
 
 ## Prerequisites
 
-- **PHP**: Version 8.4 or higher.
+- **PHP**: Version 8.2 or higher.
 - **WordPress**: Version 6.0 or higher (recommended).
 - **Composer**: Required to install PHP dependencies.
 - **System Dependencies**: The plugin relies on external Perl scripts (`AMC-*.pl`) which must be installed and accessible in the system path. Ensure the full Auto Multiple Choice software suite is installed on the server.
