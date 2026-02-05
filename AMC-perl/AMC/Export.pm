@@ -202,6 +202,16 @@ sub pre_process {
     my @marks=();
     my @post_correct=$self->{'_scoring'}->postcorrect_sc;
 
+    # Get all associations to avoid N+1 queries
+    my %association_cache = ();
+    if (my $assocs = $self->{'_assoc'}->list()) {
+      for my $a (@$assocs) {
+        my $k = studentids_string($a->{'student'}, $a->{'copy'});
+        my $real = defined($a->{'manual'}) ? $a->{'manual'} : $a->{'auto'};
+        $association_cache{$k} = $real;
+      }
+    }
+
     # Get all students from the marks table
 
     my $sth=$self->{'_scoring'}->statement('marks');
@@ -215,7 +225,11 @@ sub pre_process {
       $m->{'student.copy'}=studentids_string($m->{'student'},$m->{'copy'});
 
       # Association key for this sheet
-      $m->{'student.key'}=$self->{'_assoc'}->get_real($m->{'student'},$m->{'copy'});
+      if (exists $association_cache{$m->{'student.copy'}}) {
+        $m->{'student.key'} = $association_cache{$m->{'student.copy'}};
+      } else {
+        $m->{'student.key'}=$self->{'_assoc'}->get_real($m->{'student'},$m->{'copy'});
+      }
       $keys{$m->{'student.key'}}=1;
 
       # find the corresponding name
@@ -296,4 +310,3 @@ sub export {
 }
 
 1;
-
