@@ -106,3 +106,14 @@ register_activation_hook(__FILE__, function () {
     add_option('wp_amc_enable_scan', true);
     add_option('wp_amc_enable_mailing', true);
 });
+
+// Register REST API routes
+add_action('rest_api_init', function () {
+    register_rest_route('wp-amc/v1', '/scan', [
+        'methods' => 'POST',
+        'callback' => ['\WpAmc\Controllers\Api\ScanController', 'process'],
+        'permission_callback' => function () {
+            return current_user_can('manage_options');
+        }
+    ]);
+});
