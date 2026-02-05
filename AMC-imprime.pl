@@ -91,6 +91,14 @@ if(!grep(/^\Q$extract_with\E$/,@available_extracts)) {
   debug("Switching to extract engine $extract_with");
 }
 
+if($extract_with eq "pdftk+NA") {
+  my $v_pdftk=pdftk_version();
+  if($v_pdftk && $v_pdftk >= 3) {
+    debug "pdftk version $v_pdftk detected: workaround for bug #792168 not needed. Switching to standard pdftk.";
+    $extract_with="pdftk";
+  }
+}
+
 my $avance=AMC::Gui::Avancement::new($progress,'id'=>$progress_id);
 
 my $data=AMC::Data->new($data_dir);
@@ -242,3 +250,14 @@ for my $e (@es) {
 $avance->fin();
 
 
+
+sub pdftk_version {
+    return 0 if(!commande_accessible("pdftk"));
+    open(my $fh, "-|", "pdftk", "--version") or return 0;
+    my $l = <$fh>;
+    close $fh;
+    if($l =~ /pdftk\s+([0-9.]+)/i) {
+        return $1;
+    }
+    return 0;
+}
