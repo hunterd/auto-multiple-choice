@@ -258,7 +258,6 @@ sub pdf_output_filename {
     my $i=$self->{association}->get_real(@$student);
     $self->{data}->end_transaction('rAGN');
 
-    my $name='XXX';
     my $n;
 
     debug "Association -> ID=$i";
