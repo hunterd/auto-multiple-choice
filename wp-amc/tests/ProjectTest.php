@@ -5,7 +5,7 @@ require_once __DIR__ . "/../app/Models/Project.php";
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
-use App\Models\Project;
+use WpAmc\Models\Project;
 
 class ProjectTest extends TestCase
 {
