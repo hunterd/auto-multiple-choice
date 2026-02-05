@@ -105,7 +105,7 @@ sub new {
       $self->{position}='none';
     }
 
-    # chacks that the embedded_format is ok
+    # checks that the embedded_format is ok
     $self->{embedded_format}=lc($self->{embedded_format});
     if($self->{embedded_format} !~ /^(jpeg|png)$/i) {
       debug "ERROR: invalid <embedded_format>: $self->{embedded_format}";
