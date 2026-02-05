@@ -319,15 +319,31 @@ for my $fich (@f) {
   my $np=0;
   # any scene with number > 0 ? This may cause problems with OpenCV
   my $scene=0;
-  open(NP,"-|",magick_module("identify"),"-format","%s\n",$fich->{path});
-  while(<NP>) {
-    chomp();
-    if(/[^\s]/) {
-      $np++;
-      $scene=1 if($_ > 0);
-    }
+  my $pmodule = magick_perl_module();
+  if($pmodule) {
+      eval "use $pmodule";
+      my $img = $pmodule->new;
+      my @info = $img->Ping($fich->{path});
+      # Ping returns (width, height, size, format) per image in list context
+      if(@info) {
+          $np = scalar(@info) / 4;
+          if ($np > 1) {
+              $scene = 1;
+          } elsif ($fich->{path} =~ /\[([0-9]+)\]$/) {
+              $scene = 1 if $1 > 0;
+          }
+      }
+  } else {
+      open(NP,"-|",magick_module("identify"),"-format","%s\n",$fich->{path});
+      while(<NP>) {
+        chomp();
+        if(/[^\s]/) {
+          $np++;
+          $scene=1 if($_ > 0);
+        }
+      }
+      close(NP);
   }
-  close(NP);
   # Is this a vector format file? If so, we have to convert it
   # to bitmap
   my $vector='';
