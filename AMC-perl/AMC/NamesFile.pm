@@ -67,6 +67,7 @@ sub load {
     my $sep=$self->{'separateur'};
 
     $self->{'noms'}=[];
+    $self->{'_indices'}={};
 
     if($self->{'fichier'} &&
        -f $self->{'fichier'} && ! -z $self->{'fichier'}) {
@@ -245,6 +246,7 @@ sub get_value {
 
 sub calc_identifiants {
     my ($self)=@_;
+    $self->{'_indices'}={};
     my %ids=();
 
     $self->{'problems'}={'ID.dup'=>[],'ID.empty'=>0};
@@ -272,11 +274,13 @@ sub problem {
 sub tri {
     my ($self,$cle)=@_;
     $self->{'noms'}=[sort { $a->{$cle} cmp $b->{$cle} } @{$self->{'noms'}}];
+    $self->{'_indices'}={};
 }
 
 sub tri_num {
     my ($self,$cle)=@_;
     $self->{'noms'}=[sort { $a->{$cle} <=> $b->{$cle} } @{$self->{'noms'}}];
+    $self->{'_indices'}={};
 }
 
 sub taille {
@@ -367,22 +371,57 @@ sub same_values {
   return(0);
 }
 
+
+sub _ensure_index {
+    my ($self, $head, $mode) = @_;
+    return if $self->{'_indices'}->{$head}->{$mode};
+
+    debug "Building index for $head ($mode)";
+
+    my $indices = {};
+    my $noms = $self->{'noms'};
+    for my $i (0..$#{$noms}) {
+        my $val = $noms->[$i]->{$head};
+        next unless defined($val);
+
+        my $key;
+        if ($mode eq 'numeric') {
+            $key = simple_numeric($val);
+        } else {
+            $key = $val;
+        }
+
+        push @{$indices->{$key}}, $i;
+    }
+    $self->{'_indices'}->{$head}->{$mode} = $indices;
+}
+
 sub data {
     my ($self,$head,$c,%oo)=@_;
     return() if(!defined($c));
-    my @k=grep { defined($self->{'noms'}->[$_]->{$head})
-		   && same_values($self->{'noms'}->[$_]->{$head},$c,$oo{test_numeric}) }
-      (0..$#{$self->{'noms'}});
-    if(!$oo{'all'}) {
-	if($#k!=0) {
-	    print STDERR "Error: non-unique name (".(1+$#k)." records)\n";
-	    return();
-	}
+
+    my $mode = $oo{'test_numeric'} ? 'numeric' : 'simple';
+    $self->_ensure_index($head, $mode);
+
+    my $lookup_key = $c;
+    if ($mode eq 'numeric') {
+        $lookup_key = simple_numeric($c);
     }
+
+    my $indices = $self->{'_indices'}->{$head}->{$mode}->{$lookup_key};
+    my @k = @{$indices || []};
+
+    if(!$oo{'all'}) {
+        if($#k!=0) {
+            print STDERR "Error: non-unique name (".(1+$#k)." records)\n";
+            return();
+        }
+    }
+
     if($oo{'i'}) {
-	return(@k);
+        return(@k);
     } else {
-	return(map { $self->{'noms'}->[$_] } @k);
+        return(map { $self->{'noms'}->[$_] } @k);
     }
 }
 
@@ -392,4 +431,3 @@ sub data_n {
 }
 
 1;
-
